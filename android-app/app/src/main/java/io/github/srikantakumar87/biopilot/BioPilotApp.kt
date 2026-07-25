@@ -1,37 +1,21 @@
 package io.github.srikantakumar87.biopilot
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import io.github.srikantakumar87.biopilot.ui.theme.BiopilotTheme
+import io.github.srikantakumar87.biopilot.navigation.BioPilotNavHost
 
 @Composable
 fun BioPilotApp() {
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { padding ->
-
-        Box(
+    Scaffold { innerPadding ->
+        androidx.compose.foundation.layout.Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
+                .padding(innerPadding)
         ) {
-            Text("BioPilot")
+            BioPilotNavHost()
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BioPilotAppPreview() {
-    BiopilotTheme {
-        BioPilotApp()
     }
 }
