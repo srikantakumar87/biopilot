@@ -1,4 +1,4 @@
-package io.github.srikantakumar87.biopilot.ui.theme
+package io.github.srikantakumar87.biopilot.core.theme
 
 import androidx.compose.ui.graphics.Color
 
