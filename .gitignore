@@ -1,0 +1,43 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+out/
+
+# Kotlin
+.kotlin/
+*.kotlin_module
+
+# Signing keys
+*.jks
+*.keystore
+
+# Logs
+*.log
+
+# Generated files
+generated/
+
+# Firebase (only if you don't want to commit it)
+google-services.json
+
+# Environment variables
+.env
+.env.*
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
