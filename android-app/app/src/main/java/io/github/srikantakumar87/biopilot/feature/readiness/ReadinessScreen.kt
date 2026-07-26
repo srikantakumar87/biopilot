@@ -1,18 +1,17 @@
-package io.github.srikantakumar87.biopilot.feature.home
+package io.github.srikantakumar87.biopilot.feature.readiness
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun HomeScreen() {
+fun ReadinessScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text("🏠 Home")
+        Text("❤️ Readiness")
     }
 }
