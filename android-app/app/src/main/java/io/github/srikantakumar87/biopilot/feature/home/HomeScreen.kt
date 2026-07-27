@@ -20,44 +20,61 @@ import io.github.srikantakumar87.biopilot.feature.home.components.GreetingCard
 import io.github.srikantakumar87.biopilot.feature.home.components.HealthSummaryCard
 import io.github.srikantakumar87.biopilot.feature.home.components.MetricGrid
 import io.github.srikantakumar87.biopilot.feature.home.components.QuickActionsRow
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Box
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val backgroundBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.background
+        )
+    )
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .background(backgroundBrush)
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundBrush)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
-        GreetingCard(
-            userName = uiState.userName
-        )
+            GreetingCard(
+                userName = uiState.userName
+            )
 
-        HealthSummaryCard(
-            score = uiState.readinessScore,
-            message = "Recovery is good today"
-        )
-        Spacer(Modifier.height(24.dp))
+            HealthSummaryCard(
+                score = uiState.readinessScore,
+                message = "Recovery is good today"
+            )
+            Spacer(Modifier.height(24.dp))
 
-        SectionHeader("Today's Metrics")
+            SectionHeader("Today's Metrics")
 
-        Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
 
-        MetricGrid(metrics = uiState.metrics)
+            MetricGrid(metrics = uiState.metrics)
 
-        SectionHeader("Quick Actions")
+            SectionHeader("Quick Actions")
 
-        Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
 
-        Text("Actions: ${uiState.quickActions.size}")
-        QuickActionsRow(
-            actions = uiState.quickActions
-        )
+
+            QuickActionsRow(
+                actions = uiState.quickActions
+            )
+        }
     }
 }
