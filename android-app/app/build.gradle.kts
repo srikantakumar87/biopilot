@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.srikantakumar87.biopilot"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -44,6 +44,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.google.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.icons)
+    implementation(libs.androidx.health.connect)
     ksp(libs.google.hilt.compiler)
 
     testImplementation(libs.junit)

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.text.style.TextAlign
 
 
@@ -87,31 +88,40 @@ fun HealthSummaryCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            CircularProgressIndicator(
-                modifier = Modifier.size(80.dp),
-                progress = { animatedProgress },
-                color = animatedColor,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                strokeWidth = 10.dp
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(150.dp),
+                    progress = { animatedProgress },
+                    color = animatedColor,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    strokeWidth = 12.dp
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-            Text(
-                text = "$animatedScore%",
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontFeatureSettings = "tnum"
-                ),
-                fontWeight = FontWeight.ExtraBold,
-                color = animatedColor
-            )
+                    Text(
+                        text = "$animatedScore%",
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontFeatureSettings = "tnum"
+                        ),
+                        fontWeight = FontWeight.ExtraBold,
+                        color = animatedColor
+                    )
 
-            Text(
-                text = status,
-                style = MaterialTheme.typography.titleMedium,
-                color = animatedColor,
-                fontWeight = FontWeight.SemiBold
-            )
+                    Text(
+                        text = status,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = animatedColor,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
