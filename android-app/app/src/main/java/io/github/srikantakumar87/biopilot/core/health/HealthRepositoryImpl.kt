@@ -13,11 +13,14 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.SleepSessionRecord
+import io.github.srikantakumar87.biopilot.core.model.DailyHeartRate
 import io.github.srikantakumar87.biopilot.core.model.DailySteps
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
+import io.github.srikantakumar87.biopilot.core.model.DailySleep
+import io.github.srikantakumar87.biopilot.core.model.HeartRateSummary
 
 
 @Singleton
@@ -161,5 +164,83 @@ class HealthRepositoryImpl @Inject constructor(
         }
 
         return weeklySteps
+    }
+    override suspend fun getWeeklySleep(): List<DailySleep> {
+
+        val zoneId = ZoneId.systemDefault()
+        val today = LocalDate.now()
+
+        val weeklySleep = mutableListOf<DailySleep>()
+
+        for (i in 6 downTo 0) {
+
+            val date = today.minusDays(i.toLong())
+
+            val dayStart = date
+                .atStartOfDay(zoneId)
+                .toInstant()
+
+            val dayEnd = date
+                .plusDays(1)
+                .atStartOfDay(zoneId)
+                .toInstant()
+
+            val response = healthConnectManager.client.readRecords(
+                ReadRecordsRequest(
+                    recordType = SleepSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(
+                        dayStart.minus(Duration.ofHours(12)),
+                        dayEnd
+                    )
+                )
+            )
+
+            val totalMinutes = response.records.sumOf { record ->
+
+                val start = maxOf(record.startTime, dayStart)
+                val end = minOf(record.endTime, dayEnd)
+
+                if (end.isAfter(start))
+                    Duration.between(start, end).toMinutes()
+                else
+                    0L
+            }
+
+            weeklySleep.add(
+                DailySleep(
+                    date = date,
+                    dayLabel = date.dayOfWeek.getDisplayName(
+                        TextStyle.SHORT,
+                        Locale.getDefault()
+                    ),
+                    hours = totalMinutes / 60.0
+                )
+            )
+        }
+
+        return weeklySleep
+    }
+    override suspend fun getAverageSleepHours(): Double {
+
+        val weeklySleep = getWeeklySleep()
+
+        if (weeklySleep.isEmpty()) {
+            return 0.0
+        }
+
+        return weeklySleep
+            .map { it.hours }
+            .average()
+    }
+    override suspend fun getWeeklyHeartRates(): List<DailyHeartRate> {
+        return emptyList()
+    }
+
+    override suspend fun getHeartRateSummary(): HeartRateSummary {
+        return HeartRateSummary(
+            latest = null,
+            weeklyAverage = 0.0,
+            restingEstimate = 0.0
+        )
     }
 }

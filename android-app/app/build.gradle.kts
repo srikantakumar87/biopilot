@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.health.connect)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.core)
     ksp(libs.google.hilt.compiler)
 
     testImplementation(libs.junit)

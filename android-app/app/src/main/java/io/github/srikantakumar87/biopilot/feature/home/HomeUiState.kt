@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material.icons.outlined.SmartToy
 import io.github.srikantakumar87.biopilot.core.model.QuickAction
 import io.github.srikantakumar87.biopilot.core.model.DailySteps
+import io.github.srikantakumar87.biopilot.core.model.DailySleep
 
 data class HomeUiState(
     val userName: String = "Srikanta",
@@ -18,6 +19,8 @@ data class HomeUiState(
     val heartRate: Long? = null,
     val weight: Double? = null,
     val weeklySteps: List<DailySteps> = emptyList(),
+    val weeklySleep: List<DailySleep> = emptyList(),
+    val averageSleepHours: Double = 0.0,
 
 
     val quickActions: List<QuickAction> = listOf(

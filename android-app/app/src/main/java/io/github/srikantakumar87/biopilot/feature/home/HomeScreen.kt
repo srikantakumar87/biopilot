@@ -40,8 +40,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import io.github.srikantakumar87.biopilot.core.designsystem.BioPilotCard
+import io.github.srikantakumar87.biopilot.feature.home.components.SleepInsightsCard
 import io.github.srikantakumar87.biopilot.feature.home.components.StepGoalCard
 import io.github.srikantakumar87.biopilot.feature.home.components.WeeklyActivityCard
+import io.github.srikantakumar87.biopilot.feature.home.components.WeeklyStepsChart
 
 @Composable
 fun HomeScreen(
@@ -171,6 +174,29 @@ fun HomeScreen(
                     goal = uiState.stepGoal,
                     progress = uiState.stepProgress
                 )
+                Spacer(Modifier.height(16.dp))
+
+                BioPilotCard {
+
+                    Column {
+
+                        Text(
+                            text = "Weekly Steps",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+                        WeeklyStepsChart(
+                            weeklySteps = uiState.weeklySteps
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                WeeklyActivityCard(
+                    weeklySteps = uiState.weeklySteps
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -182,6 +208,11 @@ fun HomeScreen(
 
 
             }
+            SleepInsightsCard(
+                averageSleepHours = uiState.averageSleepHours
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             SectionHeader("Today's Metrics")
 

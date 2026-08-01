@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -49,24 +51,58 @@ class HomeViewModel @Inject constructor(
 
     fun refreshHealthData() {
         viewModelScope.launch {
-            try {
-                val steps = repository.getTodaySteps()
-                val heartRate = repository.getLatestHeartRate()
-                val sleepHours = repository.getTodaySleepHours()
-                val weight = repository.getLatestWeight()
-                val weeklySteps = repository.getWeeklySteps()
+
+            coroutineScope {
+
+                val stepsDeferred = async {
+                    repository.getTodaySteps()
+                }
+
+                val sleepDeferred = async {
+                    repository.getTodaySleepHours()
+                }
+
+                val heartRateDeferred = async {
+                    repository.getLatestHeartRate()
+                }
+
+                val weightDeferred = async {
+                    repository.getLatestWeight()
+                }
+
+                val weeklyStepsDeferred = async {
+                    repository.getWeeklySteps()
+                }
+
+                val weeklySleepDeferred = async {
+                    repository.getWeeklySleep()
+                }
+
+                val steps = stepsDeferred.await()
+                val sleepHours = sleepDeferred.await()
+                val heartRate = heartRateDeferred.await()
+                val weight = weightDeferred.await()
+                val weeklySteps = weeklyStepsDeferred.await()
+                val weeklySleep = weeklySleepDeferred.await()
+
+                val averageSleepHours =
+                    if (weeklySleep.isEmpty()) {
+                        0.0
+                    } else {
+                        weeklySleep.map { it.hours }.average()
+                    }
 
                 _uiState.update {
                     it.copy(
                         steps = steps,
-                        heartRate = heartRate,
                         sleep = formatSleep(sleepHours),
+                        heartRate = heartRate,
                         weight = weight,
-                        weeklySteps = weeklySteps
+                        weeklySteps = weeklySteps,
+                        weeklySleep = weeklySleep,
+                        averageSleepHours = averageSleepHours
                     )
                 }
-            } catch (e: Exception) {
-                Log.e("BioPilot", "Failed to refresh health data", e)
             }
         }
     }
