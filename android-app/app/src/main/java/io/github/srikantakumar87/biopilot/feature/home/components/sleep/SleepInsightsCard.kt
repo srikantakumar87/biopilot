@@ -1,4 +1,4 @@
-package io.github.srikantakumar87.biopilot.feature.home.components
+package io.github.srikantakumar87.biopilot.feature.home.components.sleep
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing

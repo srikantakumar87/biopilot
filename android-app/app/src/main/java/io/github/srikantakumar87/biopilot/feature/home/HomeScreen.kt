@@ -27,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Box
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
 import androidx.compose.material.icons.outlined.Bedtime
 import androidx.compose.material.icons.outlined.DirectionsWalk
 import androidx.compose.material.icons.outlined.Favorite
@@ -41,10 +40,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.srikantakumar87.biopilot.core.designsystem.BioPilotCard
-import io.github.srikantakumar87.biopilot.feature.home.components.SleepInsightsCard
-import io.github.srikantakumar87.biopilot.feature.home.components.StepGoalCard
-import io.github.srikantakumar87.biopilot.feature.home.components.WeeklyActivityCard
-import io.github.srikantakumar87.biopilot.feature.home.components.WeeklyStepsChart
+import io.github.srikantakumar87.biopilot.feature.home.components.sleep.SleepInsightsCard
+import io.github.srikantakumar87.biopilot.feature.home.components.activity.StepGoalCard
+import io.github.srikantakumar87.biopilot.feature.home.components.activity.WeeklyActivityCard
+import io.github.srikantakumar87.biopilot.feature.home.components.charts.WeeklyStepsChart
 
 @Composable
 fun HomeScreen(
@@ -200,11 +199,7 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                WeeklyActivityCard(
-                    weeklySteps = uiState.weeklySteps
-                )
 
-                Spacer(modifier = Modifier.height(16.dp))
 
 
             }
