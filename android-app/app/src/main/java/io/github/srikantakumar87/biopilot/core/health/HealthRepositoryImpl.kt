@@ -233,14 +233,82 @@ class HealthRepositoryImpl @Inject constructor(
             .average()
     }
     override suspend fun getWeeklyHeartRates(): List<DailyHeartRate> {
-        return emptyList()
+        val zoneId = ZoneId.systemDefault()
+        val today = LocalDate.now()
+
+        val weeklyHeartRates = mutableListOf<DailyHeartRate>()
+
+        for (i in 6 downTo 0) {
+
+            val date = today.minusDays(i.toLong())
+
+            val start = date
+                .atStartOfDay(zoneId)
+                .toInstant()
+
+            val end = date
+                .plusDays(1)
+                .atStartOfDay(zoneId)
+                .toInstant()
+
+            val response = healthConnectManager.client.readRecords(
+                ReadRecordsRequest(
+                    recordType = HeartRateRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(
+                        start,
+                        end
+                    )
+                )
+            )
+
+            val averageHeartRate =
+                response.records
+                    .flatMap { it.samples }
+                    .map { it.beatsPerMinute.toLong() }
+                    .average()
+                    .takeIf { !it.isNaN() }
+                    ?.toLong()
+                    ?: 0L
+
+            weeklyHeartRates.add(
+                DailyHeartRate(
+                    date = date,
+                    dayLabel = date.dayOfWeek.getDisplayName(
+                        TextStyle.SHORT,
+                        Locale.getDefault()
+                    ),
+                    heartRate = averageHeartRate
+                )
+            )
+        }
+
+        return weeklyHeartRates
     }
 
     override suspend fun getHeartRateSummary(): HeartRateSummary {
+
+        val latest = getLatestHeartRate()
+        val weeklyHeartRates = getWeeklyHeartRates()
+
+        val weeklyAverage =
+            if (weeklyHeartRates.isEmpty()) {
+                0.0
+            } else {
+                weeklyHeartRates
+                    .map { it.heartRate }
+                    .average()
+            }
+
+        // Placeholder until we calculate true resting heart rate
+        val restingEstimate = latest?.toDouble() ?: weeklyAverage
+
         return HeartRateSummary(
-            latest = null,
-            weeklyAverage = 0.0,
-            restingEstimate = 0.0
+
+
+
+            latest = latest,
+            weeklyAverage = weeklyAverage,
+            restingEstimate = restingEstimate
         )
     }
 }

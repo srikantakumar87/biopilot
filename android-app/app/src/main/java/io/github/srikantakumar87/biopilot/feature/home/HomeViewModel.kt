@@ -29,6 +29,7 @@ class HomeViewModel @Inject constructor(
         HealthPermissionState()
     )
 
+
     val permissionState = _permissionState.asStateFlow()
 
     fun onPermissionsGranted() {
@@ -54,6 +55,11 @@ class HomeViewModel @Inject constructor(
 
             coroutineScope {
 
+                val heartSummary = async {
+                    repository.getHeartRateSummary()
+                }
+
+
                 val stepsDeferred = async {
                     repository.getTodaySteps()
                 }
@@ -62,9 +68,7 @@ class HomeViewModel @Inject constructor(
                     repository.getTodaySleepHours()
                 }
 
-                val heartRateDeferred = async {
-                    repository.getLatestHeartRate()
-                }
+
 
                 val weightDeferred = async {
                     repository.getLatestWeight()
@@ -80,10 +84,11 @@ class HomeViewModel @Inject constructor(
 
                 val steps = stepsDeferred.await()
                 val sleepHours = sleepDeferred.await()
-                val heartRate = heartRateDeferred.await()
+
                 val weight = weightDeferred.await()
                 val weeklySteps = weeklyStepsDeferred.await()
                 val weeklySleep = weeklySleepDeferred.await()
+                val heartSummaryResult = heartSummary.await()
 
                 val averageSleepHours =
                     if (weeklySleep.isEmpty()) {
@@ -96,16 +101,20 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         steps = steps,
                         sleep = formatSleep(sleepHours),
-                        heartRate = heartRate,
+                        heartRate = heartSummaryResult.latest,
                         weight = weight,
                         weeklySteps = weeklySteps,
                         weeklySleep = weeklySleep,
-                        averageSleepHours = averageSleepHours
+                        averageSleepHours = averageSleepHours,
+                        latestHeartRate = heartSummaryResult.latest,
+                        weeklyHeartAverage = heartSummaryResult.weeklyAverage,
+                        restingHeartRate = heartSummaryResult.restingEstimate
                     )
                 }
             }
         }
     }
+
     init {
         val available = healthConnectManager.isAvailable()
 

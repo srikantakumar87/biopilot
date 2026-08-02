@@ -22,6 +22,10 @@ data class HomeUiState(
     val weeklySleep: List<DailySleep> = emptyList(),
     val averageSleepHours: Double = 0.0,
 
+    val latestHeartRate: Long? = null,
+    val weeklyHeartAverage: Double = 0.0,
+    val restingHeartRate: Double = 0.0,
+
 
     val quickActions: List<QuickAction> = listOf(
         QuickAction("Connect", Icons.Outlined.Favorite),

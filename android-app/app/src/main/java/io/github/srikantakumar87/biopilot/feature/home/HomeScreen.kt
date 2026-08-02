@@ -43,6 +43,7 @@ import io.github.srikantakumar87.biopilot.core.designsystem.BioPilotCard
 import io.github.srikantakumar87.biopilot.feature.home.components.sleep.SleepInsightsCard
 import io.github.srikantakumar87.biopilot.feature.home.components.activity.StepGoalCard
 import io.github.srikantakumar87.biopilot.feature.home.components.activity.WeeklyActivityCard
+import io.github.srikantakumar87.biopilot.feature.home.components.activity.WeeklyStepsCard
 import io.github.srikantakumar87.biopilot.feature.home.components.charts.WeeklyStepsChart
 
 @Composable
@@ -175,21 +176,13 @@ fun HomeScreen(
                 )
                 Spacer(Modifier.height(16.dp))
 
-                BioPilotCard {
 
-                    Column {
 
-                        Text(
-                            text = "Weekly Steps",
-                            style = MaterialTheme.typography.titleMedium
-                        )
 
-                        Spacer(Modifier.height(16.dp))
-                        WeeklyStepsChart(
-                            weeklySteps = uiState.weeklySteps
-                        )
-                    }
-                }
+                WeeklyStepsCard(
+                    weeklySteps = uiState.weeklySteps
+                )
+
 
                 Spacer(Modifier.height(16.dp))
 
