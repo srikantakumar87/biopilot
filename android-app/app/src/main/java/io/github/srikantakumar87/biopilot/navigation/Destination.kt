@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Destination(
@@ -42,4 +43,16 @@ sealed class Destination(
         "Settings",
         Icons.Default.Settings
     )
+    data object Developer : Destination(
+        route = "developer",
+        title = "Developer",
+        icon = Icons.Outlined.Build
+    )
+
+    data object CameraHeartRate : Destination(
+        "camera_heart_rate",
+        "Camera Heart Rate",
+        Icons.Default.Favorite
+    )
+
 }

@@ -3,9 +3,12 @@ package io.github.srikantakumar87.biopilot.core.health
 import android.health.connect.TimeRangeFilter
 import android.health.connect.datatypes.StepsRecord
 import androidx.health.connect.client.request.AggregateRequest
+import io.github.srikantakumar87.biopilot.core.ai.model.HealthSnapshot
+import io.github.srikantakumar87.biopilot.core.model.BodyComposition
 import io.github.srikantakumar87.biopilot.core.model.DailyHeartRate
 import io.github.srikantakumar87.biopilot.core.model.DailySleep
 import io.github.srikantakumar87.biopilot.core.model.DailySteps
+import io.github.srikantakumar87.biopilot.core.model.DailyWeight
 import io.github.srikantakumar87.biopilot.core.model.HeartRateSummary
 
 interface HealthRepository {
@@ -27,4 +30,12 @@ interface HealthRepository {
     suspend fun getWeeklyHeartRates(): List<DailyHeartRate>
 
     suspend fun getHeartRateSummary(): HeartRateSummary
+
+    suspend fun getWeeklyWeights(): List<DailyWeight>
+
+    suspend fun getBodyComposition(): BodyComposition
+
+    suspend fun getHealthSnapshot(): HealthSnapshot
+
+
 }

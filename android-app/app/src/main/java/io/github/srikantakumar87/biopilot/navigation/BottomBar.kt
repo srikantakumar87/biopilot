@@ -18,7 +18,8 @@ fun BottomBar(
         Destination.Readiness,
         Destination.Insights,
         Destination.History,
-        Destination.Settings
+        Destination.Settings,
+        Destination.Developer,
     )
 
     val navBackStackEntry = navController.currentBackStackEntryAsState()

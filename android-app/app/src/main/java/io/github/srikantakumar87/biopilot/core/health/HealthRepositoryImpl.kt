@@ -13,6 +13,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.SleepSessionRecord
+import io.github.srikantakumar87.biopilot.core.ai.model.HealthSnapshot
+import io.github.srikantakumar87.biopilot.core.model.BodyComposition
 import io.github.srikantakumar87.biopilot.core.model.DailyHeartRate
 import io.github.srikantakumar87.biopilot.core.model.DailySteps
 import java.time.Duration
@@ -20,6 +22,7 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 import io.github.srikantakumar87.biopilot.core.model.DailySleep
+import io.github.srikantakumar87.biopilot.core.model.DailyWeight
 import io.github.srikantakumar87.biopilot.core.model.HeartRateSummary
 
 
@@ -82,6 +85,8 @@ class HealthRepositoryImpl @Inject constructor(
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
 
+
+
         val response = healthConnectManager.client.readRecords(
             ReadRecordsRequest(
                 recordType = SleepSessionRecord::class,
@@ -91,6 +96,19 @@ class HealthRepositoryImpl @Inject constructor(
                 )
             )
         )
+
+        Log.d(
+            "SleepDebug",
+            "Records = ${response.records.size}"
+        )
+
+        response.records.forEach {
+
+            Log.d(
+                "SleepDebug",
+                "${it.startTime} -> ${it.endTime}"
+            )
+        }
 
         val totalMinutes = response.records.sumOf { record ->
 
@@ -115,6 +133,8 @@ class HealthRepositoryImpl @Inject constructor(
                 pageSize = 1
             )
         )
+
+
 
         return response.records
             .firstOrNull()
@@ -310,5 +330,99 @@ class HealthRepositoryImpl @Inject constructor(
             weeklyAverage = weeklyAverage,
             restingEstimate = restingEstimate
         )
+    }
+
+
+    override suspend fun getWeeklyWeights(): List<DailyWeight> {
+
+        val zoneId = ZoneId.systemDefault()
+        val today = LocalDate.now()
+
+        val weeklyWeights = mutableListOf<DailyWeight>()
+
+        for (i in 6 downTo 0) {
+
+            val date = today.minusDays(i.toLong())
+
+            val start = date
+                .atStartOfDay(zoneId)
+                .toInstant()
+
+            val end = date
+                .plusDays(1)
+                .atStartOfDay(zoneId)
+                .toInstant()
+
+            val response = healthConnectManager.client.readRecords(
+                ReadRecordsRequest(
+                    recordType = WeightRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(
+                        start,
+                        end
+                    ),
+                    ascendingOrder = false,
+                    pageSize = 1
+                )
+            )
+
+            val weight = response.records
+                .firstOrNull()
+                ?.weight
+                ?.inKilograms
+                ?: 0.0
+
+            weeklyWeights.add(
+                DailyWeight(
+                    date = date,
+                    dayLabel = date.dayOfWeek.getDisplayName(
+                        TextStyle.SHORT,
+                        Locale.getDefault()
+                    ),
+                    weight = weight
+                )
+            )
+        }
+
+        return weeklyWeights
+    }
+
+    override suspend fun getBodyComposition(): BodyComposition {
+
+        return BodyComposition(
+            bodyFatPercent = null,
+            leanBodyMassKg = null
+        )
+    }
+
+    override suspend fun getHealthSnapshot(): HealthSnapshot {
+
+        val steps = getTodaySteps()
+
+        val sleep = getAverageSleepHours()
+
+        val heartRate = getLatestHeartRate()
+
+        val weight = getLatestWeight()
+
+        val bmi = calculateBMI(weight)
+
+        return HealthSnapshot(
+            steps = steps,
+            averageSleepHours = sleep,
+            latestHeartRate = heartRate,
+            weight = weight,
+            bmi = bmi
+        )
+    }
+
+    private fun calculateBMI(
+        weight: Double?
+    ): Double? {
+
+        if (weight == null) return null
+
+        val heightMeters = 1.80   // TODO: Replace with user's saved height
+
+        return weight / (heightMeters * heightMeters)
     }
 }

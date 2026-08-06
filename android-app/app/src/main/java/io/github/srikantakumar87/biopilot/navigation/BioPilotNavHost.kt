@@ -5,9 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import io.github.srikantakumar87.biopilot.feature.camera.heartrate.CameraHeartRateScreen
+import io.github.srikantakumar87.biopilot.feature.developer.DemoScreen
 import io.github.srikantakumar87.biopilot.feature.history.HistoryScreen
 import io.github.srikantakumar87.biopilot.feature.home.HomeScreen
-import io.github.srikantakumar87.biopilot.feature.insights.InsightsScreen
+import io.github.srikantakumar87.biopilot.feature.insights.InsightScreen
 import io.github.srikantakumar87.biopilot.feature.readiness.ReadinessScreen
 import io.github.srikantakumar87.biopilot.feature.settings.SettingsScreen
 
@@ -30,7 +32,7 @@ fun BioPilotNavHost(
         }
 
         composable(Destination.Insights.route) {
-            InsightsScreen()
+            InsightScreen()
         }
 
         composable(Destination.History.route) {
@@ -39,6 +41,16 @@ fun BioPilotNavHost(
 
         composable(Destination.Settings.route) {
             SettingsScreen()
+        }
+        composable(Destination.Developer.route) {
+            DemoScreen(
+                navController = navController
+            )
+        }
+        composable(
+            route = Destination.CameraHeartRate.route
+        ) {
+            CameraHeartRateScreen()
         }
     }
 }

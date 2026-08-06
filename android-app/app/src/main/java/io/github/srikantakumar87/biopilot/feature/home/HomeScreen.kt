@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Bedtime
 import androidx.compose.material.icons.outlined.DirectionsWalk
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.MonitorWeight
+import androidx.compose.material3.Button
 import androidx.health.connect.client.PermissionController
 import io.github.srikantakumar87.biopilot.core.health.HealthPermissions
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +46,10 @@ import io.github.srikantakumar87.biopilot.feature.home.components.activity.StepG
 import io.github.srikantakumar87.biopilot.feature.home.components.activity.WeeklyActivityCard
 import io.github.srikantakumar87.biopilot.feature.home.components.activity.WeeklyStepsCard
 import io.github.srikantakumar87.biopilot.feature.home.components.charts.WeeklyStepsChart
+import io.github.srikantakumar87.biopilot.feature.home.components.heart.HeartHealthCard
+import io.github.srikantakumar87.biopilot.feature.home.components.heart.HeartHealthCard
+import io.github.srikantakumar87.biopilot.feature.home.components.heart.HeartTrendCard
+import io.github.srikantakumar87.biopilot.feature.home.components.weight.WeightTrendCard
 
 @Composable
 fun HomeScreen(
@@ -200,9 +205,41 @@ fun HomeScreen(
                 averageSleepHours = uiState.averageSleepHours
             )
 
+            Button(
+                onClick = {
+                    viewModel.insertDemoSteps()
+                }
+            ) {
+                Text("Insert Demo Steps")
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
+            HeartHealthCard(
+                latestHeartRate = uiState.latestHeartRate,
+                weeklyAverage = uiState.weeklyHeartAverage,
+                restingEstimate = uiState.restingHeartRate
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HeartTrendCard(
+                weeklyHeartRates = uiState.weeklyHeartRates
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            WeightTrendCard(
+                weeklyWeights = uiState.weeklyWeights
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+
             SectionHeader("Today's Metrics")
+
+
 
             Spacer(Modifier.height(12.dp))
 
@@ -211,6 +248,8 @@ fun HomeScreen(
             SectionHeader("Quick Actions")
 
             Spacer(Modifier.height(12.dp))
+
+
 
 
             QuickActionsRow(

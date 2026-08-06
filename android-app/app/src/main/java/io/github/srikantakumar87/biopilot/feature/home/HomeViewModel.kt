@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.srikantakumar87.biopilot.core.ai.HealthAnalyzer
+import io.github.srikantakumar87.biopilot.core.ai.model.HealthSnapshot
 import io.github.srikantakumar87.biopilot.core.health.HealthConnectManager
+import io.github.srikantakumar87.biopilot.core.health.HealthDataSeeder
 import io.github.srikantakumar87.biopilot.core.health.HealthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +22,8 @@ import kotlinx.coroutines.coroutineScope
 class HomeViewModel @Inject constructor(
     private val healthConnectManager: HealthConnectManager,
     private val repository: HealthRepository,
+    private val healthAnalyzer: HealthAnalyzer,
+    private val healthDataSeeder: HealthDataSeeder
 
     ) : ViewModel() {
 
@@ -31,6 +36,9 @@ class HomeViewModel @Inject constructor(
 
 
     val permissionState = _permissionState.asStateFlow()
+
+
+
 
     fun onPermissionsGranted() {
         _permissionState.update {
@@ -50,11 +58,21 @@ class HomeViewModel @Inject constructor(
         return "${h}h ${m}m"
     }
 
+    fun insertDemoSteps() {
+        viewModelScope.launch {
+            healthDataSeeder.insertTodaySteps(8500)
+            refreshHealthData()
+        }
+    }
+
     fun refreshHealthData() {
         viewModelScope.launch {
 
             coroutineScope {
 
+                val weeklyHeartRatesDeferred = async {
+                    repository.getWeeklyHeartRates()
+                }
                 val heartSummary = async {
                     repository.getHeartRateSummary()
                 }
@@ -81,14 +99,23 @@ class HomeViewModel @Inject constructor(
                 val weeklySleepDeferred = async {
                     repository.getWeeklySleep()
                 }
+                val weeklyWeightsDeferred = async {
+                    repository.getWeeklyWeights()
+                }
+                val bodyCompositionDeferred = async {
+                    repository.getBodyComposition()
+                }
 
                 val steps = stepsDeferred.await()
                 val sleepHours = sleepDeferred.await()
+                val weeklyWeights = weeklyWeightsDeferred.await()
 
                 val weight = weightDeferred.await()
                 val weeklySteps = weeklyStepsDeferred.await()
                 val weeklySleep = weeklySleepDeferred.await()
                 val heartSummaryResult = heartSummary.await()
+                val weeklyHeartRates = weeklyHeartRatesDeferred.await()
+                val bodyComposition = bodyCompositionDeferred.await()
 
                 val averageSleepHours =
                     if (weeklySleep.isEmpty()) {
@@ -108,9 +135,41 @@ class HomeViewModel @Inject constructor(
                         averageSleepHours = averageSleepHours,
                         latestHeartRate = heartSummaryResult.latest,
                         weeklyHeartAverage = heartSummaryResult.weeklyAverage,
-                        restingHeartRate = heartSummaryResult.restingEstimate
+                        restingHeartRate = heartSummaryResult.restingEstimate,
+                        weeklyHeartRates = weeklyHeartRates,
+                        weeklyWeights = weeklyWeights,
+                        bodyComposition = bodyComposition,
                     )
                 }
+
+                val state = _uiState.value
+
+                val snapshot = HealthSnapshot(
+                    steps = state.steps,
+                    averageSleepHours = state.averageSleepHours,
+                    latestHeartRate = state.latestHeartRate,
+                    weight = state.weight,
+                    bmi = state.bmi
+                )
+
+                val analysis = healthAnalyzer.analyze(snapshot)
+
+                Log.d("BioPilotAI", "Steps = ${state.steps}")
+                Log.d("BioPilotAI", "Step Goal = ${state.stepGoal}")
+                Log.d("BioPilotAI", "Step Progress = ${state.stepProgress}")
+
+                Log.d("BioPilotAI", "Average Sleep = ${state.averageSleepHours}")
+
+                Log.d("BioPilotAI", "Latest HR = ${state.latestHeartRate}")
+
+                Log.d("BioPilotAI", "Weight = ${state.weight}")
+
+                Log.d("BioPilotAI", "Overall Score: ${analysis.overallScore}")
+                Log.d("BioPilotAI", "Steps: ${analysis.stepScore}")
+                Log.d("BioPilotAI", "Sleep: ${analysis.sleepScore}")
+                Log.d("BioPilotAI", "Heart: ${analysis.heartScore}")
+                Log.d("BioPilotAI", "Weight: ${analysis.weightScore}")
+                Log.d("BioPilotAI", analysis.toString())
             }
         }
     }

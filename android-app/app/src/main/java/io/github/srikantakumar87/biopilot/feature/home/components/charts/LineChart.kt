@@ -15,25 +15,26 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLa
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import io.github.srikantakumar87.biopilot.core.model.DailySteps
-
-class LineChart {
-}
 
 @Composable
-fun WeeklyStepsChart(
-    weeklySteps: List<DailySteps>
+fun LineChart(
+    values: List<Float>,
+    modifier: Modifier = Modifier
 ) {
 
-    if (weeklySteps.isEmpty()) {
+    if (values.isEmpty()) {
+
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .height(220.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("No weekly activity available.")
+
+            Text("No data available.")
+
         }
+
         return
     }
 
@@ -41,18 +42,18 @@ fun WeeklyStepsChart(
         CartesianChartModelProducer()
     }
 
-    LaunchedEffect(weeklySteps) {
+    LaunchedEffect(values) {
+
         modelProducer.runTransaction {
+
             lineSeries {
-                series(
-                    weeklySteps.map { it.steps.toFloat() }
-                )
+                series(values)
             }
         }
     }
 
     CartesianChartHost(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(220.dp),
         chart = rememberCartesianChart(
